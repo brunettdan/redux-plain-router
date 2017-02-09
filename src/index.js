@@ -1,7 +1,11 @@
-import * as actions from './actions';
-import reducer from './reducer';
-import middleware from './middleware';
-import {NAME} from './reducer';
-import {start, generate, createRoutes} from './utils';
+const actions = require('./actions')
+    , reducer = require('./reducer')
+    , middleware = require('./middleware')
+    , utils = require('./utils');
 
-export { actions, reducer, middleware, NAME, start, generate, createRoutes };
+const NAME = reducer.NAME
+    , start = utils.start
+    , generate = utils.generate
+    , createRoutes = utils.createRoutes;
+
+module.exports = { actions, reducer, middleware, NAME, start, generate, createRoutes }

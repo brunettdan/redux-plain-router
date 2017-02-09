@@ -1,20 +1,19 @@
-import qs from 'query-string';
-import UrlPattern from 'url-pattern';
-
-import {NAME} from './reducer';
-import * as actions from './actions';
+const qs = require('query-string')
+    , UrlPattern = require('url-pattern')
+    , NAME = require('./reducer').NAME
+    , actions = require('./actions');
 
 /**
  * Start the router
  * @param {Object} store
  * @param {Function} getSetLocation
- * @param {Function} listenToChange
+ * @param {Function} [listenToChange]
  * @return {void}
  */
-export const start = (store, getSetLocation, listenToChange)=>{
+function start(store, getSetLocation, listenToChange){
     
-    // Listen to changes in the url
-    listenToChange(handleLocationChange);
+    // Listen to changes in the url, eg hashchange
+    if(listenToChange) listenToChange(handleLocationChange);
 
     // Initiate
     syncInitialLocation();
@@ -54,7 +53,7 @@ export const start = (store, getSetLocation, listenToChange)=>{
  * @param {Object|String} [query]
  * @return {String}
  */
-export const generate = (path, query)=>{
+function generate(path, query){
     let location = (path || '');
     if(!query) return location;
 
@@ -73,7 +72,7 @@ export const generate = (path, query)=>{
  * @param {Object} routes
  * @return {Object}
  */
-export const createRoutes = (routes)=>{
+function createRoutes(routes){
     let rtn = {
         routes: {}
         , match: (href)=>{
@@ -92,3 +91,5 @@ export const createRoutes = (routes)=>{
     }
     return rtn;
 };
+
+module.exports = {start, generate, createRoutes}

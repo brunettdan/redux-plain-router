@@ -1,8 +1,8 @@
-import * as actions from './actions';
-import {generate} from './utils';
-import qs from 'query-string';
+const actions = require('./actions')
+    , generate = require('./utils').generate
+    , qs = require('query-string');
 
-export default (getSetLocation)=>{
+module.exports = function(getSetLocation){
 
     return store => next => action => {
         // indexOf is used to create the possibility to namespace LOCATION_CHANGE actions,
@@ -24,6 +24,7 @@ export default (getSetLocation)=>{
         // Transform query into object
         query = typeof payload.query == 'string' ? qs.parse(payload.query || '') : (payload.query || {});
 
-        return next({type, path, query, location});
+        return next({type, payload:{path, query, location}});
     }
+
 }

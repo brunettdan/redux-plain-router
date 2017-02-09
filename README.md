@@ -5,16 +5,19 @@ Install the package
 npm install redux-plain-router
 ```
 
-Initialize it together with your store
+Initialize the router by adding the reducer and middleware to your store. The functions **getSetLocation()** and **listenLocationChange()** are configured to use the window.location.hash.
+
+To use window.history.pushState, repalce the code in **getStateLocation()**. The function should always return the full pathname and search string if it exists (eg some/page?search=val).
+If the argument location is defined, then set the location.
 ```
 import router from 'redux-plain-router';
  
-const getSetLocation = (hash)=> {
-    let str = (hash || window.location.hash || '')
+const getSetLocation = (location)=> {
+    let str = (location || window.location.hash || '')
         .replace(/^#|\/$/g, '')
         .replace(/\/\?/, '?')
         .replace(/^\/?/, '');
-    if (hash !== void 0){
+    if (location !== void 0){
         // Always set '/href[?query=val]'
         window.location.hash = str.replace(/^\/?/, '/');
     }
@@ -37,9 +40,11 @@ const store = createStore(
  
 router.start(store, getSetLocation, listenLocationChange);
 ```
+  
 
+Inside your react app, create routes and match them to render the appropriate page.
 
-Inside your react app, create routes and match them to render the correct page
+Docs regarding the pattern syntax can be found here: www.npmjs.com/package/url-pattern
 ```
 import React from 'react'
 import { connect } from 'react-redux'
@@ -91,11 +96,11 @@ class App extends React.Component{
                 if(!session.user){
                     // Show the login page without changing the url so the user 
                     // can be redirected to current page after logging in
-                    return React.createElement(components.UserLogin);
-                }else if(components[r.route]){
+                    return React.createElement(pages.UserLogin);
+                }else if(pages[r.route]){
                     // Don't pass down any router props to the page component, 
                     // let it get them from connect()
-                    return React.createElement(components[r.route]);
+                    return React.createElement(pages[r.route]);
                 }else{
                     return <div>Route not defined</div>
                 }
@@ -113,3 +118,4 @@ const AppConnect = connect(
  
 export default AppConnect;
 ```
+
