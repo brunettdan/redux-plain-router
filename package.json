@@ -1,0 +1,28 @@
+{
+  "name": "redux-plain-router",
+  "version": "0.0.1",
+  "description": "Vanilla Redux router",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/brunettdan/redux-plain-router.git"
+  },
+  "authors": [
+    "brunettdan"
+  ],
+  "license": "MIT",
+  "scripts": {
+
+  },
+  "tags": [
+    "redux"
+  ],
+  "keywords": [
+    "redux",
+    "router"
+  ],
+  "dependencies": {
+    "query-string":"^4.3.1",
+    "url-pattern":"^1.0.3"
+  }
+}

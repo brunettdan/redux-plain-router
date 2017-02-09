@@ -1,0 +1,94 @@
+import qs from 'query-string';
+import UrlPattern from 'url-pattern';
+
+import {NAME} from './reducer';
+import * as actions from './actions';
+
+/**
+ * Start the router
+ * @param {Object} store
+ * @param {Function} getSetLocation
+ * @param {Function} listenToChange
+ * @return {void}
+ */
+export const start = (store, getSetLocation, listenToChange)=>{
+    
+    // Listen to changes in the url
+    listenToChange(handleLocationChange);
+
+    // Initiate
+    syncInitialLocation();
+
+    function syncInitialLocation(){
+        const router = store.getState()[NAME];
+        // If the url is empty, and there is an initial location in the store, sync the url
+        // Otherwise, sync the store with the current location in the url
+        if(getSetLocation() == '' && router.path){
+            store.dispatch(
+                actions.navigate(router.path, router.query)
+            );
+        }else
+            handleLocationChange();
+    }
+
+    function handleLocationChange() {
+        const router = store.getState()[NAME];
+        let location = getSetLocation();
+
+        // If the location in the url matches the one in the store, don't dispatch another action
+        if(router.location == location)
+            return;
+
+        location = location.split('?');
+        store.dispatch(
+            actions.navigate(location.shift(), location.join('?'))
+        );
+    }
+
+};
+
+/**
+ * Generate a location string from path and query object
+ * Example: ('home', {user:1}) returns 'home?user=1'
+ * @param {String} path
+ * @param {Object|String} [query]
+ * @return {String}
+ */
+export const generate = (path, query)=>{
+    let location = (path || '');
+    if(!query) return location;
+
+    if(typeof query == 'string'){
+        location += query.replace(/^\??/,'?');
+    }else{
+        let qstr = qs.stringify(query);
+        if(qstr) location += `?${qstr}`;
+    }
+
+    return location;
+};
+
+/**
+ * Create a map with routes, then use the .match(location) to match a route
+ * @param {Object} routes
+ * @return {Object}
+ */
+export const createRoutes = (routes)=>{
+    let rtn = {
+        routes: {}
+        , match: (href)=>{
+            for(let n in rtn.routes){
+                let m;
+                if(m = rtn.routes[n].match(href)){
+                    m.route = n;
+                    return m;
+                }
+            }
+            return null;
+        }
+    };
+    for(let n in routes){
+        rtn.routes[n] = new UrlPattern(routes[n])
+    }
+    return rtn;
+};
