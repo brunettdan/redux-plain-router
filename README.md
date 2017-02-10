@@ -77,8 +77,8 @@ class App extends React.Component{
         const session = this.props.session
             , router = this.props.router;
  
-        if(router.location == '') {
-            // No location defined, redirect to start page
+        if(router.path == '') {
+            // No path defined, redirect to start page
             if (session.user) {
                 this.navigate('dashboard/' + session.user);
             } else {
@@ -86,13 +86,12 @@ class App extends React.Component{
             }
             return <div>You're beeing redirected..</div>;
         }else{
-            let r = routes.match(props.router.location);
+            let r = routes.match(props.router.path);
             if(!r){
                 return <div>
                     <p><strong>404</strong> Page not found. <a href="#">Go home</a></p>
                 </div>
             }else{
-                let routeClient = r.client ? r.client-0 : null;
                 if(!session.user){
                     // Show the login page without changing the url so the user 
                     // can be redirected to current page after logging in
