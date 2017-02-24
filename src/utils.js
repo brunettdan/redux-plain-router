@@ -3,7 +3,7 @@ const qs = require('query-string')
     , NAME = require('./reducer').NAME
     , actions = require('./actions');
 
-module.exports = {start, generate, createRoutes};
+module.exports = {start, generate, createRoutes, hashLocationGetSet, hashLocationChange};
 
 let started = false;
 

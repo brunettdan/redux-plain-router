@@ -1,9 +1,16 @@
 const actions = require('./actions')
     , generate = require('./utils').generate
     , qs = require('query-string')
-    , start = require('./utils').start;
+    , start = require('./utils').start
+    , hashLocationGetSet = require('./utils').hashLocationGetSet
+    , hashLocationChange = require('./utils').hashLocationChange;
 
 module.exports = function(getSetLocation, listenToChange){
+    // Set defaults
+    if(getSetLocation === void 0){
+        getSetLocation = hashLocationGetSet;
+        listenToChange = hashLocationChange;
+    }
 
     return store => {
 
