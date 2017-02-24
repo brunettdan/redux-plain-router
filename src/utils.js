@@ -70,15 +70,24 @@ function generate(path, query){
 /**
  * Create a map with routes, then use the .match(location) to match a route
  * @param {Object} routes
+ * @param {Object} [options]
+ * @param {Object} [options.parseNumbers] - If a locations parameter is a number, return is as a Number instead of a string
  * @return {Object}
  */
-function createRoutes(routes){
+function createRoutes(routes, options){
+    options || (options = {});
     let rtn = {
         routes: {}
         , match: (href)=>{
             for(let n in rtn.routes){
                 let m;
                 if(m = rtn.routes[n].match(href)){
+                    if(options.parseNumbers){
+                        for(let n in m){
+                            if(m[n]-0 == m[n])
+                                m[n] = m[n]-0;
+                        }
+                    }
                     m.route = n;
                     return m;
                 }
