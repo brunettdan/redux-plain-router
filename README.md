@@ -5,42 +5,21 @@ Install the package
 npm install redux-plain-router
 ```
 
-Initialize the router by adding the reducer and middleware to your store. The functions **getSetLocation()** and **listenLocationChange()** are configured to use the window.location.hash.
+Initialize the router by adding the reducer and middleware to your store. 
 
-To use window.history.pushState, repalce the code in **getStateLocation()**. The function should always return the full pathname and search string if it exists (eg some/page?search=val).
-If the argument location is defined, then set the location.
 ```
 import router from 'redux-plain-router';
  
-const getSetLocation = (location)=> {
-    let str = (location || window.location.hash || '')
-        .replace(/^#|\/$/g, '')
-        .replace(/\/\?/, '?')
-        .replace(/^\/?/, '');
-    if (location !== void 0){
-        // Always set '/href[?query=val]'
-        window.location.hash = str.replace(/^\/?/, '/');
-    }
-    // Always return 'href[?query=val]'
-    return str;
-};
- 
-const listenLocationChange = (callback)=>{
-    window.addEventListener('hashchange', callback, false);
-}
- 
+
 const store = createStore(
     combineReducers({
       [router.NAME]:router.reducer,
       ...
     }),
     initialState,
-    applyMiddleware([..., router.middleware(getSetLocation)])
-)
- 
-router.start(store, getSetLocation, listenLocationChange);
+    applyMiddleware([..., router.middleware()])
+);
 ```
-  
 
 Inside your react app, create routes and match them to render the appropriate page.
 
@@ -52,14 +31,18 @@ import { createRoutes } from 'redux-plain-router';
  
 // Map your own pages
 const pages = {
-    UserLogin: require('../users').Login
-    , Dashboard: require('../dashboard').Dashboard
+    UserLogin: require('./../users').Login
+    , Dashboard: require('./../dashboard').Dashboard
 }
  
 // Create your own routes 
 const routes = createRoutes({
     'UserLogin':'login(/)'
     , 'Dashboard':'dashboard/:user(/)'
+}, {
+    // optional, eg if :user is a number, the parameter will be converted into a Number
+    // otherwise it's returned as a string
+    parseNumbers:true
 });
  
 class App extends React.Component{
@@ -86,8 +69,8 @@ class App extends React.Component{
             }
             return <div>You're beeing redirected..</div>;
         }else{
-            let r = routes.match(props.router.path);
-            if(!r){
+            let params = routes.match(props.router.path);
+            if(!params){
                 return <div>
                     <p><strong>404</strong> Page not found. <a href="#">Go home</a></p>
                 </div>
@@ -96,10 +79,9 @@ class App extends React.Component{
                     // Show the login page without changing the url so the user 
                     // can be redirected to current page after logging in
                     return React.createElement(pages.UserLogin);
-                }else if(pages[r.route]){
-                    // Don't pass down any router props to the page component, 
-                    // let it get them from connect()
-                    return React.createElement(pages[r.route]);
+                }else if(pages[params.route]){
+                    // Pass down route parameters to component
+                    return React.createElement(pages[params.route], {route_params: params});
                 }else{
                     return <div>Route not defined</div>
                 }
@@ -118,3 +100,11 @@ const AppConnect = connect(
 export default AppConnect;
 ```
 
+The middleware takes two optional arguments, **getSetLocation()** and **listenLocationChange()**. By default the router is configured to use the window.location.hash.
+
+To use window.history.pushState, define the **getStateLocation()**. The function should always return the full pathname and search string if it exists (eg some/page?search=val).
+If the argument location is defined, then set the location.
+
+```
+applyMiddleware([..., router.middleware(getSetLocation, listenLocationChange)])
+```

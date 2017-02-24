@@ -3,6 +3,10 @@ const qs = require('query-string')
     , NAME = require('./reducer').NAME
     , actions = require('./actions');
 
+module.exports = {start, generate, createRoutes};
+
+let started = false;
+
 /**
  * Start the router
  * @param {Object} store
@@ -11,7 +15,15 @@ const qs = require('query-string')
  * @return {void}
  */
 function start(store, getSetLocation, listenToChange){
-    
+    if(started) return;
+    started = true;
+
+    // Set defaults
+    if(getSetLocation === void 0){
+        getSetLocation = hashLocationGetSet;
+        listenToChange = hashLocationChange;
+    }
+
     // Listen to changes in the url, eg hashchange
     if(listenToChange) listenToChange(handleLocationChange);
 
@@ -43,7 +55,6 @@ function start(store, getSetLocation, listenToChange){
             actions.navigate(location.shift(), location.join('?'))
         );
     }
-
 };
 
 /**
@@ -101,4 +112,21 @@ function createRoutes(routes, options){
     return rtn;
 };
 
-module.exports = {start, generate, createRoutes}
+
+// Default functions for start()
+function hashLocationGetSet(hash){
+    let str = (hash || window.location.hash || '')
+        .replace(/^#|\/$/g, '')
+        .replace(/\/\?/, '?')
+        .replace(/^\/?/, '');
+    if (hash !== void 0){
+        // Always set '/href(?query=val)'
+        window.location.hash = str.replace(/^\/?/, '/');
+    }
+    // Always return 'href(?query=val)'
+    return str;
+};
+
+function hashLocationChange(callback){
+    window.addEventListener('hashchange', callback, false);
+}
