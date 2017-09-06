@@ -115,14 +115,18 @@ function createRoutes(routes, options){
 
 
 // Default functions for start()
-function hashLocationGetSet(hash){
+function hashLocationGetSet(hash, replace){
     let str = (hash || window.location.hash || '')
         .replace(/^#|\/$/g, '')
         .replace(/\/\?/, '?')
         .replace(/^\/?/, '');
     if (hash !== void 0){
         // Always set '/href(?query=val)'
-        window.location.hash = str.replace(/^\/?/, '/');
+        if(replace && window.history.replaceState){
+            window.history.replaceState('', '', str.replace(/^\/?/, '/'));
+        }else{
+            window.location.hash = str.replace(/^\/?/, '/');
+        }
     }
     // Always return 'href(?query=val)'
     return str;

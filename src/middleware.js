@@ -30,12 +30,12 @@ module.exports = function(getSetLocation, listenToChange){
                 location = generate(path, query);
 
             // If the url does not match the store location, sync it
-            if(getSetLocation() != location){
-                getSetLocation(location);
+            if(getSetLocation() !== location){
+                getSetLocation(location, payload.replace);
             }
 
             // Transform query into object
-            query = typeof payload.query == 'string' ? qs.parse(payload.query || '') : (payload.query || {});
+            query = typeof payload.query === 'string' ? qs.parse(payload.query || '') : (payload.query || {});
 
             return next({type, payload:{path, query, location}});
         }
