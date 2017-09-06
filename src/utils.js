@@ -90,11 +90,12 @@ function createRoutes(routes, options){
     let rtn = {
         routes: {}
         , match: (href)=>{
+            let parseNum = options.parseNumbers;
             for(let n in rtn.routes){
                 let m;
                 if(m = rtn.routes[n].match(href)){
-                    if(options.parseNumbers){
-                        for(let n in m){
+                    for(let n in m){
+                        if(parseNum && (parseNum === true || parseNum.constructor === Array && parseNum.indexOf(n) !== -1)){
                             if(m[n]-0 == m[n])
                                 m[n] = m[n]-0;
                         }
