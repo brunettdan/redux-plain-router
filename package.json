@@ -1,6 +1,6 @@
 {
   "name": "redux-plain-router",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Super simple Redux router",
   "main": "src/index.js",
   "repository": {

@@ -123,7 +123,7 @@ function hashLocationGetSet(hash, replace){
     if (hash !== void 0){
         // Always set '/href(?query=val)'
         if(replace && window.history.replaceState){
-            window.history.replaceState('', '', str.replace(/^\/?/, '/'));
+            window.history.replaceState('', '', window.location.origin + window.location.pathname + '#' + str.replace(/^\/?/, '/'));
         }else{
             window.location.hash = str.replace(/^\/?/, '/');
         }
