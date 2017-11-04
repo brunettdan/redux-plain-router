@@ -109,7 +109,7 @@ function createRoutes(routes, options){
     };
     for(let n in routes){
         let a = routes[n], b;
-        if(typeof a === 'array'){
+        if(a && a.constructor === Array){
             b = a[1];
             a = a[0];
         }
